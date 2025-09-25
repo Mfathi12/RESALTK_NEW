@@ -9,7 +9,7 @@ import ProjectsAndAchievementsRouter from './src/modules/ProjectsAndAchievements
 import EventsAndNewsRouter from './src/modules/EventsAndNews/EventsAndNews.Router.js';
 import Contact from './src/modules/Contact/ContactUs.Router.js';
 import Community from './src/modules/Community/Community.Router.js';
-import PaymentRouter from './src/modules/Payment/Payment.Router.js';  // ✨ جديد
+//import PaymentRouter from './src/modules/Payment/Payment.Router.js'; 
 
 
 import path from "path"
@@ -33,7 +33,7 @@ app.use('/eventsAndNews', EventsAndNewsRouter);
 app.use('/contact', Contact);
 app.use('/consultation', ConsultationRouter);
 app.use('/community',Community)
-app.use('/payment', PaymentRouter); 
+//app.use('/payment', PaymentRouter); 
 app.get("/",(req,res)=> {
     res.send("hallo")
 })
