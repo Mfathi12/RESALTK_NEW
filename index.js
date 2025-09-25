@@ -35,7 +35,7 @@ app.use('/consultation', ConsultationRouter);
 app.use('/community',Community)
 app.use('/payment', PaymentRouter); 
 app.get("/",(req,res)=> {
-    res.send("hallo from resaltk")
+    res.send("hallo")
 })
 //global error handler
 app.use((err, req, res, next) => { 
