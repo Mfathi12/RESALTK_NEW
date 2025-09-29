@@ -159,6 +159,23 @@ export const chooseServiceSchema = (serviceType) => {
             throw new Error("Invalid service type");
     }
 };
+// Middleware للـ Validation
+export const validateService = (req, res, next) => {
+  const serviceType = req.params.serviceType || req.body.serviceType;
+  if (!serviceType) {
+    return next(new Error("Service type is required"));
+  }
+
+  let schema;
+  try {
+    schema = chooseServiceSchema(serviceType);
+  } catch (err) {
+    return next(new Error("Invalid service type"));
+  }
+
+  return validate(schema)(req, res, next);
+};
+
 
 export const validateStatus =Joi.object({
     status: Joi.string()

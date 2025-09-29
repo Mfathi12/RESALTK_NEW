@@ -7,9 +7,9 @@ import { Authorization } from "../../MiddleWare/Authorization.js";
 
 const router = Router();
 router.get('/getProviderEarnings',Authentication,Authorization("Service Provider"),ServicesController.getProviderEarnings);
+router.post('/RE/AddService',Authentication,Authorization("Researcher"),ServicesSchema.validateService, ServicesController.AddService);
 
-router.post('/RE/AddService',Authentication,Authorization("Researcher"),ServicesSchema.chooseServiceSchema, ServicesController.AddService);
-router.post('/RE/:teamId/:serviceType',Authentication,Authorization("Researcher"),ServicesSchema.chooseServiceSchema, ServicesController.AddService);
+router.post('/RE/:teamId/:serviceType',Authentication,Authorization("Researcher"),ServicesSchema.validateService, ServicesController.AddService);
 router.get('/admin',Authentication,Authorization("admin"),validate(ServicesSchema.validateStatus),ServicesController.GetServicesByAdmin)
 router.get('/RE/Services',Authentication,Authorization("Researcher"),ServicesController.GetUserServices)
 router.get('/RE/:teamId/Services',Authentication,Authorization("Researcher"),validate(ServicesSchema.GetTeamServices), ServicesController.GetUserServices);

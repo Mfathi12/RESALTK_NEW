@@ -76,13 +76,35 @@ export const providerSchema = Joi.object({
 
 //company schema
 export const companySchema = Joi.object({
-    ...baseSchema,
-    companyName: Joi.string().required(),
-    address: Joi.string().required(),
-    commercialRegistration: Joi.string().required(),
-    providedServices: Joi.array().items(Joi.string()).min(1).required(),
-    //logo: Joi.string().required(),
-})
+  ...baseSchema,
+  companyName: Joi.string().required(),
+  address: Joi.string().required(),
+  commercialRegistration: Joi.string().required(),
+  providedServices: Joi.array().items(
+    Joi.object({
+      serviceName: Joi.string()
+        .valid(
+          "GrammarCheck",
+          "Paraphrase",
+          "Reference",
+          "Translation",
+          "ScientificIllustration",
+          "PowerPoint",
+          "Word",
+          "ResearchGuidance",
+          "AcademicWritingHelp",
+          "SoftwareToolsAccess",
+          "ChemicalSuppliers",
+          "Printing"
+        )
+        .required(),
+      description: Joi.string().optional(),
+      languages: Joi.array().items(Joi.string()),
+      tools: Joi.array().items(Joi.string())
+    })
+  ).min(1).required(),
+});
+
 
 // admin schema
 export const adminSchema = Joi.object({

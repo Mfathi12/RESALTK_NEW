@@ -8,8 +8,10 @@ import { Services } from "../../../DB/models/Services.js";
 import { WaitingProviders } from "../../../DB/models/WaitingProviders.js";
 
 //request service by researcher or by teamLeader
-export const AddService = asyncHandler(async (req, res, next) => {
-    const { teamId, serviceType } = req.params;
+/* export const AddService = asyncHandler(async (req, res, next) => {
+    //const { teamId, serviceType } = req.params;
+    const { teamId, serviceType: serviceTypeParam } = req.params;
+    const { serviceType: serviceTypeBody } = req.body;
     const userId = req.user._id;
 
     let ownerType = "user";
@@ -57,7 +59,61 @@ export const AddService = asyncHandler(async (req, res, next) => {
         Service
     })
 
-})
+}) */
+export const AddService = asyncHandler(async (req, res, next) => {
+    const { teamId, serviceType: serviceTypeParam } = req.params;
+    const { serviceType: serviceTypeBody } = req.body;
+    const userId = req.user._id;
+
+    const serviceType = serviceTypeParam || serviceTypeBody; // 👈 يا من البارامز يا من البودي
+    if (!serviceType) {
+        return next(new Error("Service type is required"));
+    }
+
+    let ownerType = "user";
+    let ownerId = userId;
+
+    const user = await User.findById(userId);
+    if (!user) return next(new Error("User not found"));
+
+    if (teamId) {
+        const team = await Team.findById(teamId);
+        if (!team) return next(new Error("Team not found"));
+        if (!team.teamLeader.equals(userId)) {
+            return next(new Error("Only team leader can request service for the team"));
+        }
+        ownerType = "team";
+        ownerId = teamId;
+    }
+
+    const ServiceData = {
+        ownerId,
+        serviceType,
+        requestName: req.body.requestName,
+        uploadFile: req.body.uploadFile,
+        description: req.body.description,
+        deadline: req.body.deadline,
+        status: "new-request",
+        details: req.body.details || {}
+    };
+
+    const Service = await Services.create(ServiceData);
+
+    if (ownerType === "user") {
+        await User.findByIdAndUpdate(
+            userId,
+            { $push: { services: { name: Service.serviceType } } }
+        );
+    } else {
+        await Team.findByIdAndUpdate(teamId, { $push: { services: Service._id } });
+    }
+
+    return res.json({
+        message: "service request added successfully",
+        Service
+    });
+});
+
 //get services by admin in four status depand on query(in progress,new request ....)
 export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
     const { status } = req.query;
@@ -198,7 +254,7 @@ export const SetProviderPrice = asyncHandler(async (req, res, next) => {
 
     entry.price = price;
     await entry.save();
-
+    await Services.findByIdAndUpdate(requestId,{$set:{amount:price}})
     return res.json({ message: "Price added successfully", entry });
 });
 
