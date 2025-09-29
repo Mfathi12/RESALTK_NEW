@@ -241,7 +241,7 @@ export const AssignProviderByAdmin = asyncHandler(async (req, res, next) => {
 
 export const SetProviderPrice = asyncHandler(async (req, res, next) => {
     const { requestId, providerId } = req.params;
-    const { price } = req.body;
+    const { price , implementationtime} = req.body;
 
     const entry = await WaitingProviders.findOne({
         providerId: new mongoose.Types.ObjectId(providerId),
@@ -251,10 +251,20 @@ export const SetProviderPrice = asyncHandler(async (req, res, next) => {
     if (!entry) {
         return next(new Error("No assignment found for this provider and request"));
     }
+    const service = await Services.findById(requestId);
+    if (!service) {
+        return next(new Error("Service not found"));
+    }
 
+    if (service.state !== "accept") {
+        return next(new Error("Provider not accepted for this service"));
+    }
     entry.price = price;
+    service.implementationtime=implementationtime;
+    await service.save();
+
     await entry.save();
-    await Services.findByIdAndUpdate(requestId,{$set:{amount:price}})
+    await Services.findByIdAndUpdate(requestId, { $set: { amount: price } })
     return res.json({ message: "Price added successfully", entry });
 });
 
@@ -477,36 +487,70 @@ export const GetservicesByProvider = asyncHandler(async (req, res, next) => {
 })
 
 export const getProviderEarnings = asyncHandler(async (req, res, next) => {
-  const providerId = req.user._id;
+    const providerId = req.user._id;
 
-  const completedServices = await Services.find({
-    providerId,
-    status: "completed"
-  });
-
-  if (!completedServices.length) {
-    return res.json({
-      message: "No completed services found",
-      totalEarnings: 0,
-      services: []
+    const completedServices = await Services.find({
+        providerId,
+        status: "completed"
     });
-  }
 
-  let totalEarnings = 0;
-  const services = completedServices.map((s) => {
-    totalEarnings += s.amount || 0;
+    if (!completedServices.length) {
+        return res.json({
+            message: "No completed services found",
+            totalEarnings: 0,
+            services: []
+        });
+    }
 
-    return {
-      date: s.createdAt,
-      serviceName: s.requestName || s.serviceType,
-      description: s.description || "",
-      earnings: s.amount || 0
-    };
-  });
+    let totalEarnings = 0;
+    const services = completedServices.map((s) => {
+        totalEarnings += s.amount || 0;
 
-  return res.json({
-    message: "Provider services with earnings",
-    totalEarnings,
-    services
-  });
+        return {
+            date: s.createdAt,
+            serviceName: s.requestName || s.serviceType,
+            description: s.description || "",
+            earnings: s.amount || 0
+        };
+    });
+
+    return res.json({
+        message: "Provider services with earnings",
+        totalEarnings,
+        services
+    });
 });
+
+export const HandleServiceState = asyncHandler(async (req, res, next) => {
+    const { serviceId } = req.params;
+    const {providerId}=req.user._id;
+    const { state } = req.body;
+    const service = await Services.findById(serviceId)
+    if (!providerId) {
+
+    }
+    if (!service) {
+        return next(new Error("service not found"))
+    }
+    if (state === "accept") {
+        service.state = "accept";
+        await service.save()
+        return res.json({
+            message: "Provider accepted successfully, waiting for price submission",
+            service,
+        });
+    }
+    if (state === "reject") {
+        await Services.findByIdAndUpdate({ serviceId }, { $pull: { Candidate: providerId } })
+        await WaitingProviders.findOneAndDelete({
+            requestId: serviceId,
+            providerId: providerId,
+        });
+
+        return res.json({
+            message: "Provider rejected successfully and removed from candidates/waiting list",
+        });
+    }
+    return next(new Error("Invalid state, must be 'accept' or 'reject'"));
+
+})

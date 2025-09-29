@@ -7,6 +7,7 @@ export const baseSchema ={
     requestName: Joi.string().required(),
     description: Joi.string(),
     deadline: Joi.date(),
+    implementationtime:Joi.date(),
     serviceType: Joi.string().valid("GrammarCheck",
             "Paraphrase",
             "Reference",
@@ -201,7 +202,8 @@ export const getSpecificService=Joi.object({
 export const SetProviderPrice=Joi.object({
     providerId:Joi.string().custom(isValidObjectId).required(),
     requestId:Joi.string().custom(isValidObjectId).required(),
-    price:Joi.string().required()
+    price:Joi.string().required(),
+    implementationtime: Joi.date().required()
 
 }).required()
 

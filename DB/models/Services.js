@@ -35,6 +35,7 @@ export const ServicesSchema = new Schema({
     //uploadFile: { type: String ,required :true},
     description: { type: String},
     deadline: { type: Date},
+    implementationtime:{ type: Date},
     status: {
         type: String,
         enum:  ['new-request', 'provider-selection', 'in-progress', 'completed'],
@@ -58,6 +59,10 @@ export const ServicesSchema = new Schema({
     type: Number,
     required: true,
     default: 0
+},
+state:{
+    type:String,
+    enum:["accept","reject"]
 }
 
 
