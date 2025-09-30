@@ -319,6 +319,30 @@ export const GetAllProviderRequests = asyncHandler(async (req, res, next) => {
     const services = await Services.find({ providerId })
     return res.json({ message: "services", services })
 })
+export const GetAllProviderRequestsAssigned = asyncHandler(async (req, res, next) => {
+    const providerId = req.user._id;
+
+    const provider = await User.findById(providerId);
+    if (!provider) {
+        return next(new Error("provider not found"));
+    }
+
+    const services = await Services.find({ 
+        candidates: providerId, 
+        status: "provider-selection" 
+    });
+
+    const formatted = services.map(service => ({
+        id: service._id,
+        title: service.requestName,
+        description: service.description,
+        deadline: service.deadline,
+        serviceType: service.serviceType
+    }));
+
+    return res.json({ message: "services", services: formatted });
+});
+
 
 //add plan
 export const AddPlan = asyncHandler(async (req, res, next) => {
