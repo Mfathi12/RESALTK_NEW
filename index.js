@@ -9,7 +9,9 @@ import ProjectsAndAchievementsRouter from './src/modules/ProjectsAndAchievements
 import EventsAndNewsRouter from './src/modules/EventsAndNews/EventsAndNews.Router.js';
 import Contact from './src/modules/Contact/ContactUs.Router.js';
 import Community from './src/modules/Community/Community.Router.js';
-import PaymentRouter from './src/modules/Payment/Payment.Router.js'; 
+import PaymentRouter from './src/modules/Payment/Payment.Router.js';
+import FinanceRouter from './src/modules/Finance/Finance.Router.js'; 
+
 
 
 import path from "path"
@@ -34,6 +36,8 @@ app.use('/contact', Contact);
 app.use('/consultation', ConsultationRouter);
 app.use('/community',Community)
 app.use('/payment', PaymentRouter); 
+app.use('/finance', FinanceRouter); 
+
 app.get("/",(req,res)=> {
     res.send("hallo")
 })

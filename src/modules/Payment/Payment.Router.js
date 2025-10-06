@@ -90,7 +90,6 @@ router.post("/pay/:serviceId", async (req, res) => {
     const { name, email, phoneNumber, country } = req.body;
     const { serviceId } = req.params;
 
-    // 1️⃣ نجيب الخدمة من DB
     const service = await Services.findById(serviceId);
     if (!service) {
       return res.status(404).json({
@@ -178,15 +177,22 @@ router.post("/pay/:serviceId", async (req, res) => {
 router.post("/paymob/webhook", async (req, res) => {
   try {
     const { obj } = req.body;
+    if (obj && obj.order && obj.order.merchant_order_id) {
+      const serviceId = obj.order.merchant_order_id;
 
-    if (obj && obj.success && obj.order && obj.order.merchant_order_id) {
-      const serviceId = obj.order.merchant_order_id; 
+      if (obj.success === true) {
+        await Services.findByIdAndUpdate(serviceId, {
+          paymentStatus: "paid",
+          paidAmount: obj.amount_cents / 100 // نخزن الفلوس المدفوعة بالجنيه
+        });
+      } else {
+        await Services.findByIdAndUpdate(serviceId, {
+          paymentStatus: "failed"
+        });
+      }
 
-      await Services.findByIdAndUpdate(serviceId, { status: "completed" });
-
-      return res.json({ success: true, message: "Service marked as completed" });
+      return res.json({ success: true, message: "Payment status updated" });
     }
-
     res.status(400).json({ success: false, message: "Invalid webhook data" });
   } catch (err) {
     console.error("Webhook error:", err.message);

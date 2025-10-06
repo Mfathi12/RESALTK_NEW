@@ -9,6 +9,7 @@ import { WaitingProviders } from "../../../DB/models/WaitingProviders.js";
 
 //request service by researcher or by teamLeader
 /* export const AddService = asyncHandler(async (req, res, next) => {
+
     //const { teamId, serviceType } = req.params;
     const { teamId, serviceType: serviceTypeParam } = req.params;
     const { serviceType: serviceTypeBody } = req.body;
@@ -65,7 +66,7 @@ export const AddService = asyncHandler(async (req, res, next) => {
     const { serviceType: serviceTypeBody } = req.body;
     const userId = req.user._id;
 
-    const serviceType = serviceTypeParam || serviceTypeBody; // 👈 يا من البارامز يا من البودي
+    const serviceType = serviceTypeParam || serviceTypeBody;
     if (!serviceType) {
         return next(new Error("Service type is required"));
     }
@@ -93,6 +94,8 @@ export const AddService = asyncHandler(async (req, res, next) => {
         uploadFile: req.body.uploadFile,
         description: req.body.description,
         deadline: req.body.deadline,
+        amount: 0, // لسه البروفايدر محطش سعر
+        paidAmount: 0,
         status: "new-request",
         details: req.body.details || {}
     };
@@ -547,7 +550,7 @@ export const getProviderEarnings = asyncHandler(async (req, res, next) => {
 
 export const HandleServiceState = asyncHandler(async (req, res, next) => {
     const { serviceId } = req.params;
-    const {providerId}=req.user._id;
+    const providerId = req.user._id;
     const { state } = req.body;
     const service = await Services.findById(serviceId)
     if (!providerId) {
@@ -565,7 +568,7 @@ export const HandleServiceState = asyncHandler(async (req, res, next) => {
         });
     }
     if (state === "reject") {
-        await Services.findByIdAndUpdate({ serviceId }, { $pull: { Candidate: providerId } })
+        await Services.findByIdAndUpdate(serviceId , { $pull: { Candidate: providerId } })
         await WaitingProviders.findOneAndDelete({
             requestId: serviceId,
             providerId: providerId,
