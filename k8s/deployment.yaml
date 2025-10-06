@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resaltk-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resaltk-api
+  template:
+    metadata:
+      labels:
+        app: resaltk-api
+    spec:
+      containers:
+        - name: resaltk-api
+          image: mariamfathi/resaltk-api:latest   # ✅ هنا الاسم الصح
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URI
+              value: "mongodb+srv://RESALTK:14112003@resaltk.vvnlefg.mongodb.net/Resaltk"
+            - name: JWT_SECRET
+              value: "supersecret"
