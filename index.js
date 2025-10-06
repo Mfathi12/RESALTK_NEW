@@ -39,7 +39,7 @@ app.use('/payment', PaymentRouter);
 app.use('/finance', FinanceRouter); 
 
 app.get("/",(req,res)=> {
-    res.send("hallo")
+    res.send("hallo from docker")
 })
 //global error handler
 app.use((err, req, res, next) => { 
