@@ -574,6 +574,7 @@ export const HandleServiceState = asyncHandler(async (req, res, next) => {
             requestId: serviceId,
             providerId: providerId,
         });
+        await service.save()
 
         return res.json({
             message: "Provider rejected successfully and removed from candidates/waiting list",
