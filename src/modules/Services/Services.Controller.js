@@ -569,7 +569,7 @@ export const HandleServiceState = asyncHandler(async (req, res, next) => {
         });
     }
     if (state === "reject") {
-        await Services.findByIdAndUpdate(serviceId , { $pull: { Candidate: providerId } })
+        await Services.findByIdAndUpdate(serviceId , { $pull: { candidates: providerId } })
         await WaitingProviders.findOneAndDelete({
             requestId: serviceId,
             providerId: providerId,
