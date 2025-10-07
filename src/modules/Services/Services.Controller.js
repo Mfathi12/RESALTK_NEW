@@ -207,12 +207,12 @@ export const GetService = asyncHandler(async (req, res, next) => {
 
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
-    const { serviceId } = req.params;
-    console.log("Received serviceId:", serviceId);
+    const { requestId } = req.params;
+    console.log("Received serviceId:", requestId);
 
 
     // 1️⃣ تأكيد وجود الخدمة
-    const request = await Services.findById(serviceId);
+    const request = await Services.findById(requestId);
 
     if (!request) {
         return next(new Error("Service not found"));
