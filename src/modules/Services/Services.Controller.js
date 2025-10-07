@@ -198,7 +198,7 @@ export const GetService = asyncHandler(async (req, res, next) => {
     const service = await Services.findById(serviceId)
         .populate('ownerId', 'name email')
         .populate('providerId', 'name email')
-        .populate('serviceId','state');
+       // .populate('serviceId','state');
 
     return res.json({
         message: "service that you required",
