@@ -264,6 +264,7 @@ export const SetProviderPrice = asyncHandler(async (req, res, next) => {
     }
     entry.price = price;
     service.implementationtime=implementationtime;
+    service.state="submitted"
     await service.save();
 
     await entry.save();

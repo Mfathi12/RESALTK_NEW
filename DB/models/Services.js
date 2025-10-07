@@ -63,7 +63,7 @@ export const ServicesSchema = new Schema({
  
 state: {
   type: String,
-  enum: ["accept", "reject"],
+  enum: ["accept", "reject" ,"submitted"],
   default: null // أو default: "pending" لو عايزة قيمة افتراضية
 },
     paidAmount: {
