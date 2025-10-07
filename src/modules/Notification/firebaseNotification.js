@@ -1,4 +1,4 @@
-import admin from "firebase-admin";
+/* import admin from "firebase-admin";
 import express from "express";
 
 const router = express.Router();
@@ -38,3 +38,4 @@ router.post("/send-notification", async (req, res) => {
 });
 
 export default router;
+ */
