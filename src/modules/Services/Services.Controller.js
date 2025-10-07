@@ -565,6 +565,7 @@ export const HandleServiceState = asyncHandler(async (req, res, next) => {
         await service.save()
         return res.json({
             message: "Provider accepted successfully, waiting for price submission",
+            service
             
         });
     }
