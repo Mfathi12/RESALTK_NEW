@@ -193,17 +193,23 @@ export const GetUserServices = asyncHandler(async (req, res, next) => {
 
 //get specific service 
 export const GetService = asyncHandler(async (req, res, next) => {
-
     const { serviceId } = req.params;
+
     const service = await Services.findById(serviceId)
+        .select('requestName serviceType status description deadline details state amount paymentStatus')
         .populate('ownerId', 'name email')
         .populate('providerId', 'name email');
 
+    if (!service) {
+        return next(new Error("Service not found"));
+    }
+
     return res.json({
-        message: "service that you required",
+        message: "Service that you required",
         service
-    })
-})
+    });
+});
+
 
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
