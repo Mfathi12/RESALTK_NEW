@@ -207,12 +207,23 @@ export const GetService = asyncHandler(async (req, res, next) => {
 
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
-    const {serviceId}=req.params;
-    const request=await Services.findById(serviceId)
-    const providers = await User.find({ accountType: "Service Provider" , providedServices: request.serviceType})
-    return res.json({ message: "providers are available", providers })
+    const { serviceId } = req.params;
 
-})
+    // 1️⃣ تأكيد وجود الخدمة
+    const request = await Services.findById(serviceId);
+    if (!request) {
+        return next(new Error("Service not found"));
+    }
+
+    // 2️⃣ فلترة البروفايدرز اللي بيقدموا نفس نوع الخدمة
+    const providers = await User.find({
+        accountType: "Service Provider",
+        providedServices: request.serviceType
+    });
+
+    return res.json({ message: "Providers are available", providers });
+});
+
 
 export const AssignProviderByAdmin = asyncHandler(async (req, res, next) => {
     const { requestId } = req.params;
