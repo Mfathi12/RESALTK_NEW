@@ -122,7 +122,7 @@ export const verifyOTP=asyncHandler(async(req,res,next)=>{
     const { email, otp } = req.body;
     const user = await User.findOne({ email, resetPasswordOTP: otp });
     if (!user) {
-        return next(new Error("User not found or invalid OTP"));
+        return next(new Error("invalid OTP"));
     }
     if (!user.resetPasswordExpires || user.resetPasswordExpires < Date.now()) {
     return next(new Error("OTP has expired"));
