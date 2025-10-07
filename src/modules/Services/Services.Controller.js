@@ -221,7 +221,8 @@ export const GetProviders = asyncHandler(async (req, res, next) => {
     // 2️⃣ فلترة البروفايدرز اللي بيقدموا نفس نوع الخدمة
     const providers = await User.find({
         accountType: "Service Provider",
-        providedServices: request.serviceType
+        "providedServices.serviceName": request.serviceType
+
     });
 
     return res.json({ message: "Providers are available", providers });
