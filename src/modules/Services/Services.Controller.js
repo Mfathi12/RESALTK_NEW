@@ -208,9 +208,12 @@ export const GetService = asyncHandler(async (req, res, next) => {
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
     const { serviceId } = req.params;
+    console.log("Received serviceId:", serviceId);
+
 
     // 1️⃣ تأكيد وجود الخدمة
     const request = await Services.findById(serviceId);
+
     if (!request) {
         return next(new Error("Service not found"));
     }
