@@ -364,7 +364,8 @@ export const GetAllProviderRequestsAssigned = asyncHandler(async (req, res, next
         title: service.requestName,
         description: service.description,
         deadline: service.deadline,
-        serviceType: service.serviceType
+        serviceType: service.serviceType,
+        serviceState:service.state
     }));
 
     return res.json({ message: "services", services: formatted });
