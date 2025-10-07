@@ -173,7 +173,7 @@ export const GetUserServices = asyncHandler(async (req, res, next) => {
             return next(new Error("team not found"))
         }
         services = await Services.find({ _id: { $in: team.services } })
-            .select('requestName serviceType status description deadline details');
+            .select('requestName serviceType status description deadline details state');
 
     } else {
         const user = await User.findById(userId)
@@ -181,7 +181,7 @@ export const GetUserServices = asyncHandler(async (req, res, next) => {
             return next(new Error("User not found"))
         }
         services = await Services.find({ ownerId: userId })
-            .select('requestName serviceType status description deadline');
+            .select('requestName serviceType status description deadline state');
     }
 
     return res.json({
