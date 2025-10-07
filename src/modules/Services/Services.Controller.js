@@ -209,7 +209,7 @@ export const GetService = asyncHandler(async (req, res, next) => {
 export const GetProviders = asyncHandler(async (req, res, next) => {
     const {serviceId}=req.params;
     const request=await Services.findById(serviceId)
-    const providers = await User.find({ accountType: "Service Provider" },{providedServices:request.providedServices})
+    const providers = await User.find({ accountType: "Service Provider" },{providedServices:request.serviceType})
     return res.json({ message: "providers are available", providers })
 
 })
