@@ -336,7 +336,7 @@ export const GetAllProviderRequestsAssigned = asyncHandler(async (req, res, next
     });
 
     const formatted = services.map(service => ({
-        id: service._id,
+        _id: service._id,
         title: service.requestName,
         description: service.description,
         deadline: service.deadline,
