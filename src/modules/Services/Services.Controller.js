@@ -286,7 +286,7 @@ export const SetProviderPrice = asyncHandler(async (req, res, next) => {
 
     await entry.save();
     await Services.findByIdAndUpdate(requestId, { $set: { amount: price } })
-    return res.json({ message: "Price added successfully", entry });
+    return res.json({ message: "Price added successfully", service });
 });
 
 //get provider assigened to service to user
