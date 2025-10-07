@@ -207,7 +207,9 @@ export const GetService = asyncHandler(async (req, res, next) => {
 
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
-    const providers = await User.find({ accountType: "Service Provider" })
+    const {serviceId}=req.params;
+    const request=await Services.findById(serviceId)
+    const providers = await User.find({ accountType: "Service Provider" },{providedServices:request.providedServices})
     return res.json({ message: "providers are available", providers })
 
 })
@@ -346,7 +348,6 @@ export const GetAllProviderRequestsAssigned = asyncHandler(async (req, res, next
 
     return res.json({ message: "services", services: formatted });
 });
-
 
 //add plan
 export const AddPlan = asyncHandler(async (req, res, next) => {
