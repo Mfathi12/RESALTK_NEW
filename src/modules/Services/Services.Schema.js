@@ -180,7 +180,7 @@ export const validateService = (req, res, next) => {
 
 export const validateStatus =Joi.object({
     status: Joi.string()
-    .valid("new-request", "in-progress", "completed", "rejected").optional()})
+    .valid("new-request", "in-progress","provider-selection" ,"completed", "rejected").optional()})
 
 
 export const AssignProviderByAdmin = Joi.object({
