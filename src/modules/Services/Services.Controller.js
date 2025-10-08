@@ -162,11 +162,11 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
     });
 }) */
 
-    export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
+export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
   const { status } = req.query;
   let filter = {};
 
-  // ✅ لو فيه status من الكويري نستخدمه كفلتر
+  // ✅ لو فيه status نستخدمه كفلتر
   if (status) {
     filter.status = status;
   }
@@ -194,8 +194,12 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
         createdAt: 1,
         amount: 1,
         selectedProvider: 1,
+        ownerId: 1,
       };
-      populateOptions = [{ path: "selectedProvider", select: "name email" }];
+      populateOptions = [
+        { path: "ownerId", select: "name email" },
+        { path: "selectedProvider", select: "name email" },
+      ];
       break;
 
     case "completed":
@@ -203,10 +207,14 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
         requestName: 1,
         serviceType: 1,
         selectedProvider: 1,
+        ownerId: 1,
         updatedAt: 1,
         amount: 1,
       };
-      populateOptions = [{ path: "selectedProvider", select: "name email" }];
+      populateOptions = [
+        { path: "ownerId", select: "name email" },
+        { path: "selectedProvider", select: "name email" },
+      ];
       break;
 
     default:
