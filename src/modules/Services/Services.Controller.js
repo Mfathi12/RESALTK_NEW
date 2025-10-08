@@ -166,21 +166,13 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
   const { status } = req.query;
   let filter = {};
 
-  // ✅ لو فيه status نستخدمه كفلتر
-  if (status) {
-    filter.status = status;
-  }
+  if (status) filter.status = status;
 
   let projection = {};
   let populateOptions = [];
 
-  // ✅ نضبط البيانات اللي عايزين نعرضها في كل تبويب
   switch (status) {
     case "new-request":
-      projection = { requestName: 1, serviceType: 1, ownerId: 1, createdAt: 1 };
-      populateOptions = [{ path: "ownerId", select: "name email" }];
-      break;
-
     case "provider-selection":
       projection = { requestName: 1, serviceType: 1, ownerId: 1, createdAt: 1 };
       populateOptions = [{ path: "ownerId", select: "name email" }];
@@ -193,11 +185,13 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
         deadline: 1,
         createdAt: 1,
         amount: 1,
-        selectedProvider: 1,
         ownerId: 1,
+        providerId: 1,
+        selectedProvider: 1,
       };
       populateOptions = [
         { path: "ownerId", select: "name email" },
+        { path: "providerId", select: "name email" },
         { path: "selectedProvider", select: "name email" },
       ];
       break;
@@ -206,13 +200,15 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
       projection = {
         requestName: 1,
         serviceType: 1,
-        selectedProvider: 1,
-        ownerId: 1,
         updatedAt: 1,
         amount: 1,
+        ownerId: 1,
+        providerId: 1,
+        selectedProvider: 1,
       };
       populateOptions = [
         { path: "ownerId", select: "name email" },
+        { path: "providerId", select: "name email" },
         { path: "selectedProvider", select: "name email" },
       ];
       break;
@@ -221,20 +217,11 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
       projection = {};
   }
 
-  // ✅ نكوّن الكويري
   let query = Services.find(filter, projection);
+  populateOptions.forEach((p) => (query = query.populate(p)));
 
-  // ✅ نضيف populate لو محتاجين
-  if (populateOptions.length > 0) {
-    populateOptions.forEach((p) => {
-      query = query.populate(p);
-    });
-  }
-
-  // ✅ نجيب النتائج
   const services = await query.lean();
 
-  // ✅ نحسب المدة للبروجريس (days remaining)
   if (status === "in-progress") {
     services.forEach((s) => {
       const durationDays = Math.ceil(
@@ -244,13 +231,13 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // ✅ نرجع الريسبونس
   return res.json({
     message: "All Services requests",
     count: services.length,
     services,
   });
 });
+
 
 
 //get all services to spesfic user (team or user)
