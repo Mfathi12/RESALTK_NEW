@@ -231,6 +231,13 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
     });
   }
 
+    const plans = await Plan.find({}, "services").lean();
+  const planServicesSet = new Set(plans.flatMap((p) => p.services.map((id) => id.toString())));
+
+  services.forEach((s) => {
+    s.planType = planServicesSet.has(s._id.toString()) ? "plan" : "single";
+  });
+
   return res.json({
     message: "All Services requests",
     count: services.length,
