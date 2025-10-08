@@ -117,7 +117,7 @@ export const AddService = asyncHandler(async (req, res, next) => {
     });
 });
 
-//get services by admin in four status depand on query(in progress,new request ....)
+/* //get services by admin in four status depand on query(in progress,new request ....)
 export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
     const { status } = req.query;
     let filter = {};
@@ -160,7 +160,90 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
         message: "All Services requests",
         services
     });
-})
+}) */
+
+    export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
+  const { status } = req.query;
+  let filter = {};
+
+  // ✅ لو فيه status من الكويري نستخدمه كفلتر
+  if (status) {
+    filter.status = status;
+  }
+
+  let projection = {};
+  let populateOptions = [];
+
+  // ✅ نضبط البيانات اللي عايزين نعرضها في كل تبويب
+  switch (status) {
+    case "new-request":
+      projection = { requestName: 1, serviceType: 1, ownerId: 1, createdAt: 1 };
+      populateOptions = [{ path: "ownerId", select: "name email" }];
+      break;
+
+    case "provider-selection":
+      projection = { requestName: 1, serviceType: 1, ownerId: 1, createdAt: 1 };
+      populateOptions = [{ path: "ownerId", select: "name email" }];
+      break;
+
+    case "in-progress":
+      projection = {
+        requestName: 1,
+        serviceType: 1,
+        deadline: 1,
+        createdAt: 1,
+        amount: 1,
+        selectedProvider: 1,
+      };
+      populateOptions = [{ path: "selectedProvider", select: "name email" }];
+      break;
+
+    case "completed":
+      projection = {
+        requestName: 1,
+        serviceType: 1,
+        selectedProvider: 1,
+        updatedAt: 1,
+        amount: 1,
+      };
+      populateOptions = [{ path: "selectedProvider", select: "name email" }];
+      break;
+
+    default:
+      projection = {};
+  }
+
+  // ✅ نكوّن الكويري
+  let query = Services.find(filter, projection);
+
+  // ✅ نضيف populate لو محتاجين
+  if (populateOptions.length > 0) {
+    populateOptions.forEach((p) => {
+      query = query.populate(p);
+    });
+  }
+
+  // ✅ نجيب النتائج
+  const services = await query.lean();
+
+  // ✅ نحسب المدة للبروجريس (days remaining)
+  if (status === "in-progress") {
+    services.forEach((s) => {
+      const durationDays = Math.ceil(
+        (new Date(s.deadline) - new Date(s.createdAt)) / (1000 * 60 * 60 * 24)
+      );
+      s.durationDays = durationDays > 0 ? durationDays : 0;
+    });
+  }
+
+  // ✅ نرجع الريسبونس
+  return res.json({
+    message: "All Services requests",
+    count: services.length,
+    services,
+  });
+});
+
 
 //get all services to spesfic user (team or user)
 export const GetUserServices = asyncHandler(async (req, res, next) => {
@@ -209,8 +292,6 @@ export const GetService = asyncHandler(async (req, res, next) => {
         service
     });
 });
-
-
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
     const { requestId } = req.params;
