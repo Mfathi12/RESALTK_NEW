@@ -31,6 +31,6 @@ router.patch('/admin/assign-plan-provider/:planId/:serviceId', Authentication, A
 router.get('/:providerId/services',Authentication,Authorization("Service Provider"),ServicesController.GetservicesByProvider);
 router.delete('/removeProvidedService/:serviceId',Authentication,Authorization("Service Provider"),ServicesController.removeProvidedService);
 router.post('/provider/handleServiceRequest/:serviceId',Authentication,Authorization("Service Provider"),ServicesController.HandleServiceState )
-router.post('/provider/MarkServiceAsCompleted',Authentication,Authorization("Service Provider"), ServicesController.MarkServiceAsCompleted);
+router.post('/provider/MarkServiceAsCompleted/:serviceId',Authentication,Authorization("Service Provider"), ServicesController.MarkServiceAsCompleted);
 
 export default router;
