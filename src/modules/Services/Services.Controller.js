@@ -326,7 +326,7 @@ export const GetProviders = asyncHandler(async (req, res, next) => {
                 name: provider.name,
                 email: provider.email,
                 profileImage: provider.profileImage || null,
-                activeProjects: activeProjectsCount,
+                activeProjects: activeServices,
                 rating: provider.rating || 0,
 
             }
