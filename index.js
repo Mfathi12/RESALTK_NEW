@@ -13,9 +13,6 @@ import PaymentRouter from './src/modules/Payment/Payment.Router.js';
 import FinanceRouter from './src/modules/Finance/Finance.Router.js'; 
 //import notificationRouter from "./src/modules/Notification/firebaseNotification.js";
 
-
-
-
 import path from "path"
 import dotenv from 'dotenv';
 dotenv.config();

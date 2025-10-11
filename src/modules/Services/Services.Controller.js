@@ -163,86 +163,88 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
 }) */
 
 export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
-  const { status } = req.query;
-  let filter = {};
+    const { status } = req.query;
+    let filter = {};
 
-  if (status) filter.status = status;
+    if (status) filter.status = status;
 
-  let projection = {};
-  let populateOptions = [];
+    let projection = {};
+    let populateOptions = [];
 
-  switch (status) {
-    case "new-request":
-    case "provider-selection":
-      projection = { requestName: 1, serviceType: 1, ownerId: 1, createdAt: 1 };
-      populateOptions = [{ path: "ownerId", select: "name email" }];
-      break;
+    switch (status) {
+        case "new-request":
+        case "provider-selection":
+            projection = { requestName: 1, serviceType: 1, ownerId: 1, createdAt: 1 };
+            populateOptions = [{ path: "ownerId", select: "name email" }];
+            break;
 
-    case "in-progress":
-      projection = {
-        requestName: 1,
-        serviceType: 1,
-        deadline: 1,
-        createdAt: 1,
-        amount: 1,
-        ownerId: 1,
-        providerId: 1,
-        selectedProvider: 1,
-      };
-      populateOptions = [
-        { path: "ownerId", select: "name email" },
-        { path: "providerId", select: "name email" },
-        { path: "selectedProvider", select: "name email" },
-      ];
-      break;
+        case "in-progress":
+            projection = {
+                requestName: 1,
+                serviceType: 1,
+                deadline: 1,
+                createdAt: 1,
+                amount: 1,
+                ownerId: 1,
+                providerId: 1,
+                selectedProvider: 1,
+            };
+            populateOptions = [
+                { path: "ownerId", select: "name email" },
+                { path: "providerId", select: "name email" },
+                { path: "selectedProvider", select: "name email" },
+            ];
+            break;
 
-    case "completed":
-      projection = {
-        requestName: 1,
-        serviceType: 1,
-        updatedAt: 1,
-        amount: 1,
-        ownerId: 1,
-        providerId: 1,
-        selectedProvider: 1,
-      };
-      populateOptions = [
-        { path: "ownerId", select: "name email" },
-        { path: "providerId", select: "name email" },
-        { path: "selectedProvider", select: "name email" },
-      ];
-      break;
+        case "completed":
+            projection = {
+                requestName: 1,
+                serviceType: 1,
+                updatedAt: 1,
+                createdAt: 1,
+                deliveredAt: 1,
+                amount: 1,
+                ownerId: 1,
+                providerId: 1,
+                selectedProvider: 1,
+            };
+            populateOptions = [
+                { path: "ownerId", select: "name email" },
+                { path: "providerId", select: "name email" },
+                { path: "selectedProvider", select: "name email" },
+            ];
+            break;
 
-    default:
-      projection = {};
-  }
+        default:
+            projection = {};
+    }
 
-  let query = Services.find(filter, projection);
-  populateOptions.forEach((p) => (query = query.populate(p)));
+    let query = Services.find(filter, projection);
+    populateOptions.forEach((p) => (query = query.populate(p)));
 
-  const services = await query.lean();
+    const services = await query.lean();
 
-  if (status === "in-progress") {
-    services.forEach((s) => {
-      const durationDays = Math.ceil(
-        (new Date(s.deadline) - new Date(s.createdAt)) / (1000 * 60 * 60 * 24)
-      );
-      s.durationDays = durationDays > 0 ? durationDays : 0;
-    });
-  }
+    if (status === "in-progress") {
+        services.forEach((s) => {
+            const durationDays = Math.ceil(
+                (new Date(s.deadline) - new Date(s.createdAt)) / (1000 * 60 * 60 * 24)
+            );
+            s.durationDays = durationDays > 0 ? durationDays : 0;
+        });
+    }
 
     const plans = await Plan.find({}, "services").lean();
-  const planServicesSet = new Set(plans.flatMap((p) => p.services.map((id) => id.toString())));
+    const planServicesSet = new Set(plans.flatMap((p) => p.services.map((id) => id.toString())));
 
-  services.forEach((s) => {
-    s.planType = planServicesSet.has(s._id.toString()) ? "plan" : "single";
-  });
+    services.forEach((s) => {
+        s.planType = planServicesSet.has(s._id.toString()) ? "plan" : "single";
+    });
 
-  return res.json({
-    message: "All Services requests",
-    count: services.length,
-    services,
-  });
+    return res.json({
+        message: "All Services requests",
+        count: services.length,
+        services,
+    });
 });
 
 
@@ -350,7 +352,7 @@ export const AssignProviderByAdmin = asyncHandler(async (req, res, next) => {
 
 export const SetProviderPrice = asyncHandler(async (req, res, next) => {
     const { requestId, providerId } = req.params;
-    const { price , implementationtime} = req.body;
+    const { price, implementationtime } = req.body;
 
     const entry = await WaitingProviders.findOne({
         providerId: new mongoose.Types.ObjectId(providerId),
@@ -369,8 +371,8 @@ export const SetProviderPrice = asyncHandler(async (req, res, next) => {
         return next(new Error("Provider not accepted for this service"));
     }
     entry.price = price;
-    service.implementationtime=implementationtime;
-    service.state="submitted"
+    service.implementationtime = implementationtime;
+    service.state = "submitted"
     await service.save();
 
     await entry.save();
@@ -437,9 +439,9 @@ export const GetAllProviderRequestsAssigned = asyncHandler(async (req, res, next
         return next(new Error("provider not found"));
     }
 
-    const services = await Services.find({ 
-        candidates: providerId, 
-        status: "provider-selection" 
+    const services = await Services.find({
+        candidates: providerId,
+        status: "provider-selection"
     });
 
     const formatted = services.map(service => ({
@@ -448,7 +450,7 @@ export const GetAllProviderRequestsAssigned = asyncHandler(async (req, res, next
         description: service.description,
         deadline: service.deadline,
         serviceType: service.serviceType,
-        state:service.state
+        state: service.state
     }));
 
     return res.json({ message: "services", services: formatted });
@@ -672,11 +674,11 @@ export const HandleServiceState = asyncHandler(async (req, res, next) => {
         return res.json({
             message: "Provider accepted successfully, waiting for price submission",
             service
-            
+
         });
     }
     if (state === "reject") {
-        await Services.findByIdAndUpdate(serviceId , { $pull: { candidates: providerId } })
+        await Services.findByIdAndUpdate(serviceId, { $pull: { candidates: providerId } })
         await WaitingProviders.findOneAndDelete({
             requestId: serviceId,
             providerId: providerId,

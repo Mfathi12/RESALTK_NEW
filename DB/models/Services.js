@@ -60,20 +60,24 @@ export const ServicesSchema = new Schema({
         required: true,
         default: 0
     },
- 
-state: {
-  type: String,
-  enum: ["accept", "reject" ,"submitted"],
-  default: null // أو default: "pending" لو عايزة قيمة افتراضية
-},
+
+    state: {
+        type: String,
+        enum: ["accept", "reject", "submitted"],
+        default: null // أو default: "pending" لو عايزة قيمة افتراضية
+    },
     paidAmount: {
-    type: Number,
-    default: 0 // اللي اتدفع فعليًا
+        type: Number,
+        default: 0 // اللي اتدفع فعليًا
     },
     paymentStatus: {
-    type: String,
-    enum: ["pending", "paid", "failed"],
-    default: "pending"
+        type: String,
+        enum: ["pending", "paid", "failed"],
+        default: "pending"
+    },
+    deliveredAt: {
+        type: Date,
+        default: Date.now(),
     },
 },
     {
