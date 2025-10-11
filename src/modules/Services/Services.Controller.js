@@ -692,3 +692,34 @@ export const HandleServiceState = asyncHandler(async (req, res, next) => {
     return next(new Error("Invalid state, must be 'accept' or 'reject'"));
 
 })
+
+export const MarkServiceAsCompleted = asyncHandler(async (req, res, next) => {
+  const { serviceId } = req.params;
+  const providerId = req.user._id;
+
+  // نجيب الخدمة
+  const service = await Services.findById(serviceId);
+  if (!service) {
+    return next(new Error("Service not found"));
+  }
+
+  // تأكيد إن اللي بيكمّلها هو نفس الـ provider المسؤول عنها
+  if (service.providerId?.toString() !== providerId.toString()) {
+    return next(new Error("You are not authorized to complete this service"));
+  }
+
+  // لو الخدمة مش في مرحلة التنفيذ
+  if (service.status !== "in-progress") {
+    return next(new Error("Service is not in progress"));
+  }
+
+  // نحدّث الحالة والتاريخ
+  service.status = "completed";
+  service.deliveredAt = new Date(); // ⏰ التاريخ اللي اتسلمت فيه فعلاً
+  await service.save();
+
+  return res.json({
+    message: "Service marked as completed successfully",
+    service,
+  });
+});
