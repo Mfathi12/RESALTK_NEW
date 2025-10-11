@@ -336,6 +336,16 @@ export const GetProviders = asyncHandler(async (req, res, next) => {
     return res.json({ message: "Providers are available", providers: providersWithActiveCount });
 });
 
+export const GetProviderActiveProjects =asyncHandler(async(req,res,next)=>{
+    const {providerId}=req.params;
+    const provider=await User.findById(providerId).select("name email rating");
+    if(!provider){
+        return next (new Error("provider not found"))
+    }
+    const activeProjects=await Services.find({providerId , status:"in-progress"}).select("requestName serviceType deadline createdAt");
+    const activeCount=activeProjects.lenght;
+    return res.json({message:"ProviderActiveProjects", activeProjects, activeCount, provider})
+})
 
 export const AssignProviderByAdmin = asyncHandler(async (req, res, next) => {
     const { requestId } = req.params;
