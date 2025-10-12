@@ -50,11 +50,6 @@ const ApplicationSchema = new Schema({
   degree: String,
   major: String,
   cv: String,
-  status: {
-    type: String,
-    enum: ["Pending", "Accepted", "Rejected"],
-    default: "Pending"
-  }
 }, { timestamps: true });
 
 export const Event=model("Event",EventSchema);
