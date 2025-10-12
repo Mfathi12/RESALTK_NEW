@@ -301,8 +301,7 @@ export const GetService = asyncHandler(async (req, res, next) => {
 //Get All Providers 
 export const GetProviders = asyncHandler(async (req, res, next) => {
     const { requestId } = req.params;
-    console.log("Received serviceId:", requestId);
-
+    const {name,maxActive,minActive}=req.query;
 
     // 1️⃣ تأكيد وجود الخدمة
     const request = await Services.findById(requestId);
@@ -310,12 +309,14 @@ export const GetProviders = asyncHandler(async (req, res, next) => {
     if (!request) {
         return next(new Error("Service not found"));
     }
-
-    // 2️⃣ فلترة البروفايدرز اللي بيقدموا نفس نوع الخدمة
-    const providers = await User.find({
-        accountType: "Service Provider",
+    const filter={
+           accountType: "Service Provider",
         "providedServices.serviceName": request.serviceType
-    }).select("name email profileImage providedServices rating");
+    }
+    if(name){
+        filter.name={$regex:name ,$options:"i"}
+    }
+    const providers = await User.find(filter).select("name email profileImage providedServices rating");
 
     const providersWithActiveCount = await Promise.all(
         providers.map(async (provider) => {
@@ -334,18 +335,18 @@ export const GetProviders = asyncHandler(async (req, res, next) => {
             }
         })
     )
+     let filteredProviders = providersWithActiveCount;
+  if (minActive || maxActive) {
+    filteredProviders = filteredProviders.filter((p) => {
+      return (
+        (!minActive || p.activeProjects >= parseInt(minActive)) &&
+        (!maxActive || p.activeProjects <= parseInt(maxActive))
+      );
+    });
+  }
 
     return res.json({ message: "Providers are available", providers: providersWithActiveCount });
 });
-
-export const GetProviderByName=asyncHandler(async(req,res,next)=>{
-    const {name} =req.params;
-    const provider=await User.find({name}).select("name email profileImage providedServices rating");
-    if(!provider){
-        return next (new Error("provider not found"))
-    }
-    return res.json({})
-})
 
 export const GetProviderActiveProjects =asyncHandler(async(req,res,next)=>{
     const {providerId}=req.params;
