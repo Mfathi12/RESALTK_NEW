@@ -345,7 +345,9 @@ export const GetProviders = asyncHandler(async (req, res, next) => {
     });
   }
 
-    return res.json({ message: "Providers are available", providers: providersWithActiveCount });
+    return res.json({ message: "Providers are available",
+    count: filteredProviders.length,
+    providers: filteredProviders, });
 });
 
 export const GetProviderActiveProjects =asyncHandler(async(req,res,next)=>{
