@@ -1,7 +1,9 @@
 import { Team } from "../../../DB/models/Team.js";
-import { Event, News} from "../../../DB/models/EventsAndNews.js";
+import { Event, News ,Application} from "../../../DB/models/EventsAndNews.js";
 import { Achievement } from "../../../DB/models/ProjectsAndAchievements.js";
 import { asyncHandler } from "../../Utils/asyncHandler.js";
+import { User } from "../../../DB/models/User.js";
+
 
 export const addEvent = asyncHandler(async(req,res,next)=>{
     const { teamId } = req.params;
@@ -94,6 +96,32 @@ export const deleteNew=asyncHandler(async(req,res,next)=>{
     }
     await neww.deleteOne();
     return res.json({message:"New deleted successfully"})
+})
+
+export const ApplyForEvent=asyncHandler(async(req,res,next)=>{
+    const {eventId}=req.params;
+    const event=await Event.findById(eventId) 
+    if(!event){
+        return next(new Error("event not found"))
+    }
+    const user=await User.find(req.user._id);
+    if(!user){
+        return next (new Error("user not found"))
+    }
+    const application=await Application.create({
+    userId: user._id,
+    eventId,
+    fullName: user.name,
+    educationalLevel: user.educationLevel,
+    university: user.university,
+    degree: user.degree,
+    major: user.major,
+    //cv: user.cv,
+    })
+      return res.json({
+    message: "Apply done successfully",
+    application
+  });
 })
 
 

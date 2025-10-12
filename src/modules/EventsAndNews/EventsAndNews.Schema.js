@@ -32,3 +32,7 @@ export const deleteNewSchema = Joi.object({
 export const deleteEventSchema = Joi.object({
     eventId: Joi.string().custom(isValidObjectId).required()
 })
+
+export const ApplyForEvent=Joi.object({
+    eventId:Joi.string().custom(isValidObjectId).required()
+})

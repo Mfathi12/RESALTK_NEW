@@ -32,7 +32,6 @@ router.get('/:providerId/services',Authentication,Authorization("Service Provide
 router.delete('/removeProvidedService/:serviceId',Authentication,Authorization("Service Provider"),ServicesController.removeProvidedService);
 router.post('/provider/handleServiceRequest/:serviceId',Authentication,Authorization("Service Provider"),ServicesController.HandleServiceState )
 router.post('/provider/MarkServiceAsCompleted/:serviceId',Authentication,Authorization("Service Provider"), ServicesController.MarkServiceAsCompleted);
-
 router.get('/admin/ProviderActiveProjects/:providerId',Authentication,Authorization("admin"), ServicesController.GetProviderActiveProjects);
 
 export default router;

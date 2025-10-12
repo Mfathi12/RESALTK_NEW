@@ -41,5 +41,22 @@ export const NewsSchema = new Schema({
     timestamps: true
 });
 
+const ApplicationSchema = new Schema({
+  userId: { type: Types.ObjectId, ref: "User", required: true },
+  eventId: { type: Types.ObjectId, ref: "Event", required: true },
+  fullName: String,
+  educationalLevel: String,
+  university: String,
+  degree: String,
+  major: String,
+  cv: String,
+  status: {
+    type: String,
+    enum: ["Pending", "Accepted", "Rejected"],
+    default: "Pending"
+  }
+}, { timestamps: true });
+
 export const Event=model("Event",EventSchema);
 export const News=model("News",NewsSchema);
+export const Application = model("Application", ApplicationSchema);

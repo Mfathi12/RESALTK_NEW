@@ -14,5 +14,6 @@ router.get('/:eventId',Authentication,Authorization("Researcher","admin","Servic
 router.patch('/:newId',Authentication,Authorization("admin"),validate(EventsAndNewsSchema.updateNewSchema),EventsAndNewsController.updateNew);
 router.delete('/deleteEvent/:eventId',Authentication,Authorization("Researcher","admin"),validate(EventsAndNewsSchema.deleteEventSchema),EventsAndNewsController.deleteEvent);
 router.delete('/deleteNew/:newId',Authentication,Authorization("admin"),validate(EventsAndNewsSchema.deleteNewSchema),EventsAndNewsController.deleteNew);
+router.post('/ApplyForEvent/:eventId',Authentication,Authorization("Researcher"),validate(EventsAndNewsSchema.ApplyForEvent),EventsAndNewsController.ApplyForEvent);
 
 export default router;
