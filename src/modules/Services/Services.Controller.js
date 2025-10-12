@@ -171,6 +171,7 @@ export const GetServicesByAdmin = asyncHandler(async (req, res, next) => {
     let projection = {};
     let populateOptions = [];
 
+
     switch (status) {
         case "new-request":
         case "provider-selection":
@@ -283,7 +284,7 @@ export const GetService = asyncHandler(async (req, res, next) => {
     const { serviceId } = req.params;
 
     const service = await Services.findById(serviceId)
-        .select('requestName serviceType status description deadline details state amount paymentStatus')
+        //.select('requestName serviceType status description deadline details state amount paymentStatus')
         .populate('ownerId', 'name email')
         .populate('providerId', 'name email');
 
