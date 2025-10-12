@@ -105,7 +105,7 @@ export const ApplyForEvent=asyncHandler(async(req,res,next)=>{
     if(!event){
         return next(new Error("event not found"))
     }
-    const user=await User.find(userId);
+    const user=await User.findById(userId);
     if(!user){
         return next (new Error("user not found"))
     }
