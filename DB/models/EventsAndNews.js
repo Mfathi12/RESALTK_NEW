@@ -42,7 +42,7 @@ export const NewsSchema = new Schema({
 });
 
 const ApplicationSchema = new Schema({
-  userId: { type: Types.ObjectId, ref: "User", required: true },
+  userId: { type: Types.ObjectId, ref: "User" },
   eventId: { type: Types.ObjectId, ref: "Event", required: true },
   fullName: String,
   educationalLevel: String,
