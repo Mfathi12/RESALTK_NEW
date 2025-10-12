@@ -64,6 +64,7 @@ import { WaitingProviders } from "../../../DB/models/WaitingProviders.js";
 export const AddService = asyncHandler(async (req, res, next) => {
     const { teamId, serviceType: serviceTypeParam } = req.params;
     const { serviceType: serviceTypeBody } = req.body;
+    const { requestName, uploadFile, description, deadline, ...details } = req.body;
     const userId = req.user._id;
 
     const serviceType = serviceTypeParam || serviceTypeBody;
@@ -97,7 +98,7 @@ export const AddService = asyncHandler(async (req, res, next) => {
         amount: 0, // لسه البروفايدر محطش سعر
         paidAmount: 0,
         status: "new-request",
-        details: req.body.details || {}
+        details
     };
 
     const Service = await Services.create(ServiceData);
