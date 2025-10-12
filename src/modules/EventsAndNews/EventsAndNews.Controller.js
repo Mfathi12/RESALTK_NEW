@@ -109,6 +109,10 @@ export const ApplyForEvent=asyncHandler(async(req,res,next)=>{
     if(!user){
         return next (new Error("user not found"))
     }
+    const existingUser=await User.findOne({userId,eventId})
+      if (existingApplication) {
+    return next(new Error("You already applied for this event"));
+  }
     const application=await Application.create({
     userId,
     eventId,
