@@ -100,16 +100,17 @@ export const deleteNew=asyncHandler(async(req,res,next)=>{
 
 export const ApplyForEvent=asyncHandler(async(req,res,next)=>{
     const {eventId}=req.params;
+    const userId = req.user._id;
     const event=await Event.findById(eventId) 
     if(!event){
         return next(new Error("event not found"))
     }
-    const user=await User.find(req.user._id);
+    const user=await User.find(userId);
     if(!user){
         return next (new Error("user not found"))
     }
     const application=await Application.create({
-    userId: user._id,
+    userId,
     eventId,
     fullName: user.name,
     educationalLevel: user.educationLevel,
