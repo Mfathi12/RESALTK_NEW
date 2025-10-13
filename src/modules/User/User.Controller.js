@@ -106,3 +106,38 @@ export const AddDoctor=asyncHandler(async (req,res,next)=>{
     const Doctor =await User.create(req.body)
     return res.json({message:"doctor added succefully",Doctor})
 })
+
+export const getPendingProviders=asyncHandler(async(req,res,next)=>{
+        const pendingProviders= await User.find({
+            accountType:'Service Provider',
+            isApproved:false,
+            isBanned: false
+        }).select("name services");
+
+        return res.json({message: "Pending provider accounts fetched successfully",pendingProviders})
+})
+
+export const updateProviderAccountStatus =asyncHandler(async(req,res,next)=>{
+    const {providerId}=req.params;
+    const provider=await User.findById(providerId);
+    const {state}=req.body;
+    if(!provider  || provider.accountType !== "Service Provider"){
+        return next(new Error("provider not found"))
+    }
+    if(state=== 'approve')
+    {
+        provider.isApproved=true;
+        provider.isBanned=false;
+    }else if(state==='ban'){
+        provider.isApproved=false;
+        provider.isBanned=true;
+    } else {
+        return next(new Error("Invalid state"));
+    }
+
+    await provider.save()
+   return res.json({
+  message: `Provider account has been ${state}d successfully`,
+  provider,
+});
+})

@@ -288,7 +288,8 @@ export const GetService = asyncHandler(async (req, res, next) => {
         //.select('requestName serviceType status description deadline details state amount paymentStatus')
         .populate('ownerId', 'name email')
         .populate('providerId', 'name email')
-        .populate('candidates','name email profilePic');
+        .populate('candidates','name email profilePic')
+        .populate('selectedProvider','name email profilePic');
 
     if (!service) {
         return next(new Error("Service not found"));

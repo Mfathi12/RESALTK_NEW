@@ -16,7 +16,8 @@ validate(UserSchema.AddDoctor),UserController.AddDoctor)
 router.get("/providers",Authentication,Authorization("admin"), UserController.getProviders);
 router.patch("/update", Authentication,validate(UserSchema.updateUserSchema), UserController.updateUser);
 
-
+router.post("/updateProviderAccountStatus/:providerId",Authentication,Authorization("admin"), UserController.updateProviderAccountStatus)
+router.get("/getPendingProviders",Authentication,Authorization("admin"), UserController.getPendingProviders)
 //router.delete("/:id",validate(UserSchema.UserIdSchema), UserController.deleteUser);
 
 export default router;

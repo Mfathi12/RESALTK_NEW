@@ -120,7 +120,15 @@ export const UserSchema = new Schema({
     profilePic: {
         type: String,
         default: null
-    }
+    },
+    isApproved: {
+    type: Boolean,
+    default: false,
+  },
+  isBanned: {
+    type: Boolean,
+    default: false,
+  },
 
 }, { timestamps: true });
 

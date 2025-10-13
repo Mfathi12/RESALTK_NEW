@@ -41,9 +41,19 @@ export const login = asyncHandler(async (req, res, next) => {
     if (!user) {
         return next(new Error("Invalid email"));
     }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
         return next(new Error("Invalid password"));
+    }
+
+        if (user.accountType === "Service Provider") {
+        if (user.isBanned) {
+            return next(new Error("Your account has been banned by admin"));
+        }
+        if (!user.isApproved) {
+            return next(new Error("Your account is pending admin approval"));
+        }
     }
     const token = jwt.sign(
         { id: user._id, email },
