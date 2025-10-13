@@ -52,7 +52,8 @@ export const GetPost=asyncHandler(async(req,res,next)=>{
 })
 
 export const GetAllPosts=asyncHandler(async(req,res,next)=>{
-    const Posts=await Community.find();
+    const Posts=await Community.find() .populate("researchId", "name profilePic") 
+    .populate("replies.userId", "name profilePic"); ;
     return res.json({messages:"posts returned successufully",Posts})
 })
 
