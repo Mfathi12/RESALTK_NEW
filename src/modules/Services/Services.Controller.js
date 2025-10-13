@@ -287,7 +287,8 @@ export const GetService = asyncHandler(async (req, res, next) => {
     const service = await Services.findById(serviceId)
         //.select('requestName serviceType status description deadline details state amount paymentStatus')
         .populate('ownerId', 'name email')
-        .populate('providerId', 'name email');
+        .populate('providerId', 'name email')
+        .populate('candidates','name email profilePic');
 
     if (!service) {
         return next(new Error("Service not found"));
