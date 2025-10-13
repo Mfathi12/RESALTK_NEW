@@ -17,7 +17,7 @@ router.get('/:serviceId',Authentication,validate(ServicesSchema.getSpecificServi
 router.get('/admin/providers/:requestId', Authentication, Authorization("admin"),ServicesController.GetProviders);
 router.patch('/admin/assign-provider/:requestId', Authentication, Authorization("admin"),validate(ServicesSchema.AssignProviderByAdmin),ServicesController.AssignProviderByAdmin);
 router.post('/provider/:requestId/:providerId/price',Authentication,Authorization("Service Provider"),validate(ServicesSchema.SetProviderPrice),ServicesController.SetProviderPrice);
-router.get('/RE/:serviceId/providersAssigned',Authentication,Authorization("Researcher"),validate(ServicesSchema.getprovidersAssigned),ServicesController.getprovidersAssigned)
+router.get('/RE/:serviceId/providersAssigned',Authentication,Authorization("Researcher" , "admin"),validate(ServicesSchema.getprovidersAssigned),ServicesController.getprovidersAssigned)
 router.post('/select-provider/:requestId', Authentication, Authorization("Researcher"), ServicesController.SelectProviderByUser);
 router.get('/provider/:providerId/allRequests',Authentication,Authorization("Service Provider"),validate(ServicesSchema.GetAllProviderRequests),ServicesController.GetAllProviderRequests);
 router.get('/provider/allProviderRequestsAsssigned',Authentication,Authorization("Service Provider"),ServicesController.GetAllProviderRequestsAssigned);
