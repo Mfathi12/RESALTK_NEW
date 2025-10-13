@@ -112,7 +112,7 @@ export const getPendingProviders=asyncHandler(async(req,res,next)=>{
             accountType:'Service Provider',
             isApproved:false,
             isBanned: false
-        }).select("name services");
+        }).select("name providedServices.serviceName");
 
         return res.json({message: "Pending provider accounts fetched successfully",pendingProviders})
 })
