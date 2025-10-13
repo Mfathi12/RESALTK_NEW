@@ -7,6 +7,8 @@ import { validate } from "../../MiddleWare/Validation.js";
 //import { fileUpload } from "../../Utils/multer.js";
 
 const router =Router();
+router.get("/getPendingProviders",Authentication,Authorization("admin"), UserController.getPendingProviders)
+
 router.get('/getProviderServices',Authentication,UserController.getProviderServices);
 
 router.get("/:id",Authentication,validate( UserSchema.UserIdSchema), UserController.getUserById);
@@ -17,7 +19,6 @@ router.get("/providers",Authentication,Authorization("admin"), UserController.ge
 router.patch("/update", Authentication,validate(UserSchema.updateUserSchema), UserController.updateUser);
 
 router.post("/updateProviderAccountStatus/:providerId",Authentication,Authorization("admin"), UserController.updateProviderAccountStatus)
-router.get("/getPendingProviders",Authentication,Authorization("admin"), UserController.getPendingProviders)
 //router.delete("/:id",validate(UserSchema.UserIdSchema), UserController.deleteUser);
 
 export default router;
