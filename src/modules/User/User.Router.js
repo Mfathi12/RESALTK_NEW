@@ -22,7 +22,7 @@ router.patch("/update", Authentication,validate(UserSchema.updateUserSchema), Us
 
 router.post("/updateProviderAccountStatus/:providerId",Authentication,Authorization("admin"), UserController.updateProviderAccountStatus)
 router.post("/updateTeamStatus/:teamId",Authentication,Authorization("admin"), UserController.updateTeamStatus)
-
+router.post("/admin/AddDoctor",Authentication,Authorization("admin"), UserController.AddDoctor)
 //router.delete("/:id",validate(UserSchema.UserIdSchema), UserController.deleteUser);
 
 export default router;

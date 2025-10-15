@@ -94,20 +94,57 @@ export const getProviders=asyncHandler(async (req, res,next) => {
     });
 }) 
 
-export const AddDoctor=asyncHandler(async (req,res,next)=>{
-    const {email,password}= req.body;
-    const doctor=await User.findOne(email)
-    if(doctor)
-    {
-        return next(new Error("docto is already exsist"))
-    }
-        let profileImage = null;
-    if (req.file) {
-    profileImage = req.file.filename; 
-    }
-    const Doctor =await User.create(req.body)
-    return res.json({message:"doctor added succefully",Doctor})
-})
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { asyncHandler } from "../../Utils/asyncHandler.js";
+import { User } from "../../../DB/models/User.js";
+
+export const AddDoctor = asyncHandler(async (req, res, next) => {
+  const { name, email, password, confirmPassword, degree, biography, expertise } = req.body;
+
+  // 1️⃣ تأكيد إن اللي بيضيف هو أدمن
+  if (!req.user || req.user.accountType !== "admin") {
+    return next(new Error("Only admin can add a doctor"));
+  }
+
+  // 2️⃣ التأكد إن الدكتور مش موجود
+  const existingDoctor = await User.findOne({ email });
+  if (existingDoctor) {
+    return next(new Error("Doctor already exists"));
+  }
+
+  // 3️⃣ التحقق من كلمة السر
+  if (password !== confirmPassword) {
+    return next(new Error("Passwords do not match"));
+  }
+
+  // 4️⃣ تشفير الباسورد
+  const hashedPassword = await bcrypt.hash(password, 8);
+
+  // 5️⃣ التعامل مع الصورة لو موجودة
+  let profilePic = null;
+  if (req.file) {
+    profilePic = req.file.filename;
+  }
+
+  // 6️⃣ إنشاء حساب الدكتور
+  const doctor = await User.create({
+    name,
+    email,
+    password: hashedPassword,
+    degree,
+    biography,
+    expertise,
+    profilePic,
+    accountType: "doctor",
+    isApproved: true, // ممكن الأدمن يعتمدهم تلقائيًا
+  });
+
+  // 7️⃣ الرد
+  res.status(201).json({
+    message: "Doctor added successfully by admin",doctor});
+});
+
 
 export const getPendingProvidersPendingTeams = asyncHandler(async (req, res, next) => {
   // 1️⃣ Pending Providers
