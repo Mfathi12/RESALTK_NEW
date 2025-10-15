@@ -14,40 +14,45 @@ export const getAllUsers=asyncHandler(async (req, res,next) => {
 })
 
 export const getUserById = asyncHandler(async (req, res, next) => {
-    let user = await User.findById(req.params.id)
-        .select("-password -otp -__v")
-        .lean();
+  let user = await User.findById(req.params.id)
+    .select("-password -otp -__v")
+    .lean();
 
-    if (!user) {
-        return next(new Error("User not found"));
-    }
+  if (!user) {
+    return next(new Error("User not found"));
+  }
 
-    if (user.accountType === "Service Provider") {
-        const completedServices = await Services.find({
-            providerId: user._id,
-            status: "completed"
-        });
-
-        const completedCount = completedServices.length;
-        const totalEarnings = completedServices.reduce(
-            (sum, service) => sum + (service.amount || 0),
-            0
-        );
-
-        const providedCount = user.providedServices ? user.providedServices.length : 0;
-
-        user.stats = {
-            completedServices: completedCount,
-            earnings: totalEarnings,
-            providedServicesCount: providedCount
-        };
-    }
-
-    return res.json({
-        message: "User retrieved successfully",
-        user
+  // الحالة الوحيدة اللي بنحسب فيها إحصائيات خاصة
+  if (user.accountType === "Service Provider") {
+    const completedServices = await Services.find({
+      providerId: user._id,
+      status: "completed",
     });
+
+    const completedCount = completedServices.length;
+    const totalEarnings = completedServices.reduce(
+      (sum, service) => sum + (service.amount || 0),
+      0
+    );
+
+    const providedCount = user.providedServices
+      ? user.providedServices.length
+      : 0;
+
+    user.stats = {
+      completedServices: completedCount,
+      earnings: totalEarnings,
+      providedServicesCount: providedCount,
+    };
+  }
+
+  // غير كده.. رجّع كل التفاصيل زي ما هي
+  return res.json({
+    message: "User retrieved successfully",
+    user,
+  });
 });
+
 
 export const updateUser=asyncHandler(async (req, res,next) => {
     const user = await User.findByIdAndUpdate(req.user._id, req.body, {
