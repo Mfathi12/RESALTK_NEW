@@ -12,6 +12,8 @@ export const AddTeam = asyncHandler(async (req, res, next) => {
     if (existingTeam) {
         return next(new Error("team already exists"));
     }
+    req.body.isApproved = false;
+    req.body.isBanned = false;
     const team = await Team.create(req.body);
     return res.json({ messag: "team created succefuully", team })
 })

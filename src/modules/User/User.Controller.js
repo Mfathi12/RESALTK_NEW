@@ -188,3 +188,28 @@ export const updateTeamStatus = asyncHandler(async (req, res, next) => {
     team
   });
 });
+export const getApprovedProvidersAndTeams = asyncHandler(async (req, res, next) => {
+  // ✅ Approved Providers
+  const approvedProviders = await User.find({
+    accountType: 'Service Provider',
+    isApproved: true,
+    isBanned: false
+  }).select("name providedServices.serviceName");
+
+  // ✅ Approved Teams
+  const approvedTeams = await Team.find({
+    isApproved: true,
+    isBanned: false
+  })
+    .select("teamName description fieldOfResearch teamLeader members")
+    .populate("teamLeader", "name profilePic")
+    .populate("members.user", "name profilePic");
+
+  return res.json({
+    message: "Approved entities fetched successfully",
+    approved: {
+      providers: approvedProviders,
+      teams: approvedTeams
+    }
+  });
+});

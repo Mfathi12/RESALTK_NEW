@@ -9,6 +9,8 @@ import { validate } from "../../MiddleWare/Validation.js";
 const router =Router();
 router.get("/admin/getPendingProviders&PendingTeams",Authentication,Authorization("admin"), UserController.getPendingProvidersPendingTeams)
 
+router.get("/admin/getApprovedProvidersAndTeams",Authentication,Authorization("admin"), UserController.getApprovedProvidersAndTeams)
+
 router.get('/getProviderServices',Authentication,UserController.getProviderServices);
 
 router.get("/:id",Authentication,validate( UserSchema.UserIdSchema), UserController.getUserById);

@@ -11,6 +11,7 @@ import Contact from './src/modules/Contact/ContactUs.Router.js';
 import Community from './src/modules/Community/Community.Router.js';
 import PaymentRouter from './src/modules/Payment/Payment.Router.js';
 import FinanceRouter from './src/modules/Finance/Finance.Router.js'; 
+
 //import notificationRouter from "./src/modules/Notification/firebaseNotification.js";
 
 import path from "path"
@@ -58,4 +59,6 @@ res
 }); */
 
 export const server =app.listen(PORT , console.log(`Server is running on port ${PORT}`));
+import { initSocket } from "./src/modules/chat/chat.controller.js";
+initSocket(server);
 export default app;

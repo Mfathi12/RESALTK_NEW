@@ -19,3 +19,5 @@ router.post('/:teamId/action/:requestId',Authentication,Authorization("Researche
 router.delete('/:teamId',Authentication,Authorization("Researcher"),validate(TeamSchema.DeleteTeamSchema),TeamController.DeleteTeam)
 router.delete('/:teamId/:userId',Authentication,Authorization('Researcher') ,validate(TeamSchema.LeaveTeamSchema),TeamController.LeaveTeam)
 export default router;
+//chat by user 
+//payment
