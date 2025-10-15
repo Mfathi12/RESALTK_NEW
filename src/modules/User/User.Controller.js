@@ -94,53 +94,31 @@ export const getProviders=asyncHandler(async (req, res,next) => {
         providers
     });
 }) 
-
 export const AddDoctor = asyncHandler(async (req, res, next) => {
-  const { name, email, password, confirmPassword, degree, biography, expertise } = req.body;
+  const { email, password } = req.body;
 
-  // 1️⃣ تأكيد إن اللي بيضيف هو أدمن
-  if (!req.user || req.user.accountType !== "admin") {
-    return next(new Error("Only admin can add a doctor"));
-  }
-
-  // 2️⃣ التأكد إن الدكتور مش موجود
   const existingDoctor = await User.findOne({ email });
   if (existingDoctor) {
     return next(new Error("Doctor already exists"));
   }
 
-  // 3️⃣ التحقق من كلمة السر
-  if (password !== confirmPassword) {
-    return next(new Error("Passwords do not match"));
-  }
-
-  // 4️⃣ تشفير الباسورد
-  const hashedPassword = await bcrypt.hash(password, 8);
-
-  // 5️⃣ التعامل مع الصورة لو موجودة
   let profilePic = null;
   if (req.file) {
     profilePic = req.file.filename;
   }
 
-  // 6️⃣ إنشاء حساب الدكتور
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const doctor = await User.create({
-    name,
-    email,
+    ...req.body,
     password: hashedPassword,
-    degree,
-    biography,
-    expertise,
-    profilePic,
     accountType: "doctor",
-    isApproved: true, // ممكن الأدمن يعتمدهم تلقائيًا
+    profilePic,
+    isApproved: true,
   });
 
-  // 7️⃣ الرد
-  res.status(201).json({
-    message: "Doctor added successfully by admin",doctor});
+  return res.json({ message: "Doctor added successfully", doctor });
 });
-
 
 export const getPendingProvidersPendingTeams = asyncHandler(async (req, res, next) => {
   // 1️⃣ Pending Providers
@@ -168,7 +146,6 @@ export const getPendingProvidersPendingTeams = asyncHandler(async (req, res, nex
     }
   });
 });
-
 
 export const updateProviderAccountStatus =asyncHandler(async(req,res,next)=>{
     const {providerId}=req.params;

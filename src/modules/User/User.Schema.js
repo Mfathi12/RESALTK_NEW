@@ -32,17 +32,12 @@ export const updateUserSchema = Joi.object({
     service: Joi.string(),
 }).required();
 
-export const AddDoctor=Joi.object({
-    name: Joi.string().min(3).max(30),
-    email: Joi.string().email(),
-    password: Joi.string().min(6).max(30),
-    confirmPassword: Joi.string().valid(Joi.ref("password")).when("password", {
-        is: Joi.exist(),
-        then: Joi.required(),
-    }),
-
-    degree:Joi.string(),
-    Biography:Joi.string(),
-    Expertise:Joi.string(),
-    image:Joi.string()
-}).required()
+export const AddDoctor = Joi.object({
+  name: Joi.string().min(3).max(30).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).max(30).required(),
+  degree: Joi.string().required(),
+  biography: Joi.string().optional(),
+  expertise: Joi.array().items(Joi.string()).min(1).required(),
+  image: Joi.string().optional(),
+}).required();
