@@ -21,6 +21,8 @@ router.get("/providers",Authentication,Authorization("admin"), UserController.ge
 router.patch("/update", Authentication,validate(UserSchema.updateUserSchema), UserController.updateUser);
 
 router.post("/updateProviderAccountStatus/:providerId",Authentication,Authorization("admin"), UserController.updateProviderAccountStatus)
+router.post("/updateTeamStatus/:teamId",Authentication,Authorization("admin"), UserController.updateTeamStatus)
+
 //router.delete("/:id",validate(UserSchema.UserIdSchema), UserController.deleteUser);
 
 export default router;
