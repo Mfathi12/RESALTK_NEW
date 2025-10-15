@@ -129,6 +129,14 @@ export const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
+    biography: {
+    type: String,
+  },
+  expertise: [
+    {
+      type: String,
+    },
+  ],
 
 }, { timestamps: true });
 
