@@ -94,11 +94,6 @@ export const getProviders=asyncHandler(async (req, res,next) => {
     });
 }) 
 
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { asyncHandler } from "../../Utils/asyncHandler.js";
-import { User } from "../../../DB/models/User.js";
-
 export const AddDoctor = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, degree, biography, expertise } = req.body;
 
