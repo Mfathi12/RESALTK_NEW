@@ -107,15 +107,33 @@ export const AddDoctor=asyncHandler(async (req,res,next)=>{
     return res.json({message:"doctor added succefully",Doctor})
 })
 
-export const getPendingProviders=asyncHandler(async(req,res,next)=>{
-        const pendingProviders= await User.find({
-            accountType:'Service Provider',
-            isApproved:false,
-            isBanned: false
-        }).select("name providedServices.serviceName");
+export const getPendingProvidersPendingTeams = asyncHandler(async (req, res, next) => {
+  // 1️⃣ Pending Providers
+  const pendingProviders = await User.find({
+    accountType: 'Service Provider',
+    isApproved: false,
+    isBanned: false
+  }).select("name providedServices.serviceName");
 
-        return res.json({message: "Pending provider accounts fetched successfully",pendingProviders})
-})
+  // 2️⃣ Pending Teams
+  const pendingTeams = await Team.find({
+    isApproved: false,
+    isBanned: false
+  })
+    .select("teamName description fieldOfResearch teamLeader members")
+    .populate("teamLeader", "name profilePic")
+    .populate("members.user", "name profilePic");
+
+  // 3️⃣ Return merged response
+  return res.json({
+    message: "Pending entities fetched successfully",
+    pending: {
+      providers: pendingProviders,
+      teams: pendingTeams
+    }
+  });
+});
+
 
 export const updateProviderAccountStatus =asyncHandler(async(req,res,next)=>{
     const {providerId}=req.params;
@@ -141,3 +159,30 @@ export const updateProviderAccountStatus =asyncHandler(async(req,res,next)=>{
   provider,
 });
 })
+
+export const updateTeamStatus = asyncHandler(async (req, res, next) => {
+  const { teamId } = req.params;
+  const { state } = req.body; // ممكن تكون "approve" أو "ban"
+
+  const team = await Team.findById(teamId);
+  if (!team) {
+    return next(new Error("Team not found"));
+  }
+
+  if (state === "approve") {
+    team.isApproved = true;
+    team.isBanned = false;
+  } else if (state === "ban") {
+    team.isApproved = false;
+    team.isBanned = true;
+  } else {
+    return next(new Error("Invalid state value"));
+  }
+
+  await team.save();
+
+  return res.json({
+    message: `Team has been ${state}d successfully`,
+    team
+  });
+});

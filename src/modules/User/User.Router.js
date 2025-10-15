@@ -7,7 +7,7 @@ import { validate } from "../../MiddleWare/Validation.js";
 //import { fileUpload } from "../../Utils/multer.js";
 
 const router =Router();
-router.get("/getPendingProviders",Authentication,Authorization("admin"), UserController.getPendingProviders)
+router.get("/admin/getPendingProviders&PendingTeams",Authentication,Authorization("admin"), UserController.getPendingProvidersPendingTeams)
 
 router.get('/getProviderServices',Authentication,UserController.getProviderServices);
 

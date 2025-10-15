@@ -64,7 +64,10 @@ export const TeamSchema = new Schema({
         degree: String,
         major: String,
         cv: String,
-    }]
+    }],
+    isApproved: { type: Boolean, default: false },
+    isBanned: { type: Boolean, default: false },
+
 
 }, {
     timestamps: true
