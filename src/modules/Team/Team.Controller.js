@@ -17,18 +17,40 @@ export const AddTeam = asyncHandler(async (req, res, next) => {
     const team = await Team.create(req.body);
     return res.json({ messag: "team created succefuully", team })
 })
-
 export const GetTeam = asyncHandler(async (req, res, next) => {
-    const { teamId } = req.params
-    const team = await Team.findById(teamId).populate('teamLeader', 'name email')
+    const { teamId } = req.params;
+
+    const team = await Team.findById(teamId)
+        .populate('teamLeader', 'name email profilePic') // عرض بيانات القائد
         .populate('projects')
         .populate('Achievements')
-        .populate('services');
+        .populate('services')
+        .populate({
+            path: 'members.user',
+            select: 'name profilePic email' // الحقول اللي هتتعرض من user
+        });
+
     if (!team) {
-        return next(new Error("team not found"))
+        return next(new Error("team not found"));
     }
-    return res.json({ messag: "fetched team", team })
-})
+
+    // تجهيز بيانات الأعضاء بشكل منسق
+    const membersData = team.members.map(member => ({
+        name: member.user?.name,
+        profilePic: member.user?.profilePic,
+        email: member.user?.email,
+        role: member.role
+    }));
+
+    return res.json({
+        message: "fetched team successfully",
+        team: {
+            ...team.toObject(),
+            members: membersData
+        }
+    });
+});
+
 
 export const GetTeams = asyncHandler(async (req, res, next) => {
     const teams = await Team.find().select("teamName description fieldOfResearch teamLeader members")
