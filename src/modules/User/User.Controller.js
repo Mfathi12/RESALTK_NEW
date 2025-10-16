@@ -228,3 +228,70 @@ export const getApprovedProvidersAndTeams = asyncHandler(async (req, res, next) 
     }
   });
 });
+export const getAllDoctors = asyncHandler(async (req, res, next) => {
+  const doctors = await User.find({ accountType: "doctor" })
+    .select("name degree email ");
+
+  return res.json({
+    message: "Doctors retrieved successfully",
+    doctors
+  });
+});
+
+export const deleteDoctor = asyncHandler(async (req, res, next) => {
+  const { doctorId } = req.params;
+
+  const doctor = await User.findOneAndDelete({
+    _id: doctorId,
+    accountType: "doctor"
+  });
+
+  if (!doctor) {
+    return next(new Error("Doctor not found"));
+  }
+
+  return res.json({
+    message: "Doctor deleted successfully",
+    doctor
+  });
+});
+
+export const updateDoctor = asyncHandler(async (req, res, next) => {
+  const { doctorId } = req.params; // ID جاي من البارامز
+  const { name, email, password, degree, biography, expertise } = req.body;
+
+  const doctor = await User.findOne({ _id: doctorId, accountType: "doctor" });
+  if (!doctor) {
+    return next(new Error("Doctor not found"));
+  }
+
+  // تحديث الحقول المسموح بها فقط
+  if (name) doctor.name = name;
+  if (email) doctor.email = email;
+  if (degree) doctor.degree = degree;
+  if (biography) doctor.biography = biography;
+
+  if (expertise) {
+    // نتاكد انها Array
+    doctor.expertise = Array.isArray(expertise)
+      ? expertise
+      : [expertise];
+  }
+
+  if (password) {
+    const hashed = await bcrypt.hash(password, 10);
+    doctor.password = hashed;
+  }
+
+  if (req.file) {
+    doctor.profilePic = req.file.filename;
+  }
+
+  await doctor.save();
+
+  return res.json({
+    message: "Doctor updated successfully",
+    doctor
+  });
+});
+
